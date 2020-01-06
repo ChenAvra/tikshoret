@@ -15,6 +15,9 @@ public class message {
         OriginalStringStart = originalStringStart;
         OrginalStringEnd = orginalStringEnd;
     }
+
+
+
     public message(String fullString){
 
         int indexOfFullString=0;
