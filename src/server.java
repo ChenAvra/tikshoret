@@ -32,11 +32,12 @@ public class server {
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            System.out.println("Server:recived a message");
             serverSocket.receive(receivePacket);
             String sentence = new String( receivePacket.getData());
 
 
-            System.out.println("RECEIVED: " + sentence);
+            System.out.println("server:RECEIVED: " + sentence);
 
             message m = new message(sentence);
 
@@ -51,12 +52,14 @@ public class server {
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
                 String offerAnswer = messageToReturn.getFullString();
+                System.out.println("send you an answer:"+offerAnswer);
                 sendData = offerAnswer.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                 serverSocket.send(sendPacket);
             }
 
            else if(m.getType()=='3'){
+                System.out.println("server: this is a request, i will try to find you an answer");
                 answer=this.tryDeHash(start, end, hash);
                 if(answer!=null){
                     message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());

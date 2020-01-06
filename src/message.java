@@ -19,43 +19,23 @@ public class message {
 
 
     public message(String fullString){
+       // System.out.println("in message class, your full string is:"+fullString);
 
-        int indexOfFullString=0;
-        for(int i=0; i<32; i++){
-            this.TeamName[i]=fullString.charAt(indexOfFullString);
-            indexOfFullString++;
-        }
-
-
-        Type=fullString.charAt(indexOfFullString);
-        indexOfFullString++;
-
-
-        for(int i=0; i<40; i++){
-            this.Hash[i]=fullString.charAt(indexOfFullString);
-            indexOfFullString++;
-        }
+        this.TeamName=(fullString.substring(0,32)).toCharArray();
+        Type=fullString.charAt(32);
 
 
 
-        OriginalLengh=fullString.charAt(indexOfFullString);
-        indexOfFullString++;
+        this.Hash=(fullString.substring(33,73)).toCharArray();
 
 
-
+        OriginalLengh=fullString.charAt(73);
         int sizeOfString = Integer.parseInt(""+OriginalLengh);
 
-        for(int i=0; i<sizeOfString; i++){
-            this.OriginalStringStart[i]=fullString.charAt(indexOfFullString);
-            indexOfFullString++;
-        }
+        this.OriginalStringStart=(fullString.substring(74,74+sizeOfString)).toCharArray();
 
+        this.OrginalStringEnd=(fullString.substring((74+sizeOfString),(74+sizeOfString+sizeOfString))).toCharArray();
 
-
-        for(int i=0; i<sizeOfString; i++){
-            this.OrginalStringEnd[i]=fullString.charAt(indexOfFullString);
-            indexOfFullString++;
-        }
 
     }
     public String getFullString(){
@@ -69,7 +49,7 @@ public class message {
 
         String start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
         String end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
-        toReturn=teamName+hash+TypeFromMessage+ lenghFromMessage+ start+end;
+        toReturn=teamName+TypeFromMessage+hash+ lenghFromMessage+ start+end;
         return toReturn;
 
     }
