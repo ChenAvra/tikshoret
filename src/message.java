@@ -46,9 +46,13 @@ public class message {
         char lenghFromMessage = this.OriginalLengh;
 
         int sizeOfString = Character.getNumericValue(OriginalLengh);
+        String start="";
+        String end="";
+        if(getOriginalStringStart()!=null&& getOrginalStringEnd()!=null){
+             start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
+            end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
+        }
 
-        String start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
-        String end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
         toReturn=teamName+TypeFromMessage+hash+ lenghFromMessage+ start+end;
         return toReturn;
 
