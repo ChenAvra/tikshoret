@@ -22,27 +22,52 @@ public class message {
             this.TeamName[i]=fullString.charAt(indexOfFullString);
             indexOfFullString++;
         }
+
+
         Type=fullString.charAt(indexOfFullString);
         indexOfFullString++;
+
 
         for(int i=0; i<40; i++){
             this.Hash[i]=fullString.charAt(indexOfFullString);
             indexOfFullString++;
         }
+
+
+
         OriginalLengh=fullString.charAt(indexOfFullString);
         indexOfFullString++;
 
-        int sizeOfString = (int) Math.pow(2, getOriginalLengh());
+
+
+        int sizeOfString = Integer.parseInt(""+OriginalLengh);
 
         for(int i=0; i<sizeOfString; i++){
             this.OriginalStringStart[i]=fullString.charAt(indexOfFullString);
             indexOfFullString++;
         }
 
+
+
         for(int i=0; i<sizeOfString; i++){
             this.OrginalStringEnd[i]=fullString.charAt(indexOfFullString);
             indexOfFullString++;
         }
+
+    }
+    public String getFullString(){
+        String toReturn="";
+        String teamName = new String(this.getTeamName());
+        String hash = new String (this.getHash());
+        char TypeFromMessage = this.Type;
+        char lenghFromMessage = this.OriginalLengh;
+
+        int sizeOfString = Integer.parseInt(""+OriginalLengh);
+
+        String start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
+        String end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
+        toReturn=teamName+hash+TypeFromMessage+ lenghFromMessage+ start+end;
+        return toReturn;
 
     }
 
