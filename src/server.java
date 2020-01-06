@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 public class server {
     ExecutorService pool = Executors.newFixedThreadPool(2);
 
+
     public void start() {
 
         pool.execute(new Thread(() -> {
@@ -29,6 +30,8 @@ public class server {
         DatagramSocket serverSocket = new DatagramSocket(3117);
         byte[] receiveData = new byte[1024];
         byte[] sendData = new byte[1024];
+        serverSocket.setSoTimeout(1000000000);
+        boolean isTimeOut=false;
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

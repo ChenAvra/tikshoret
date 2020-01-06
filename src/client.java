@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 public class client {
 
     public String hash;
-    public int length;
+    public char length;
     public String teamName;
     public HashSet<InetAddress> listServer;
     public DatagramSocket data;
@@ -22,10 +22,10 @@ public class client {
 
 
 
-    public  void discoverAndOffer (String sentence, int length) throws IOException {
+    public  void discoverAndOffer (String sentence, char length) throws IOException {
 
         //discover message to the server
-        message m = new message(teamName.toCharArray(), '1', hash.toCharArray(), (char) length, null, null);
+        message m = new message(teamName.toCharArray(), '1', hash.toCharArray(), length, null, null);
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName("255.255.255.255");
         byte[] sendData = new byte[1024];
@@ -60,11 +60,11 @@ public class client {
     }
 
     public  void  sendRequest( DatagramSocket clientSocket) throws IOException {
-        String[] ranges = divideToDomains(length, listServer.size());
+        String[] ranges = divideToDomains(Character.getNumericValue(length), listServer.size());
         int i = 0;
         for (InetAddress ip1 : listServer) {
             if (i < ranges.length - 1) {
-                message m = new message(teamName.toCharArray(), '3', hash.toCharArray(), (char) length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
+                message m = new message(teamName.toCharArray(), '3', hash.toCharArray(),  length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
                 i++;
                 byte[] sendData = new byte[1024];
                 sendData = m.getFullString().getBytes();
@@ -110,7 +110,7 @@ public class client {
             this.hash = sentence;
             System.out.println("Please enter the input string length");
             BufferedReader inFromUser2 = new BufferedReader(new InputStreamReader(System.in));
-            int length = Integer.parseInt(inFromUser2.readLine());
+            char length = (inFromUser2.readLine()).charAt(0);
             this.length = length;
             discoverAndOffer(sentence, length);
 
