@@ -6,15 +6,29 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class server {
+    ExecutorService pool = Executors.newFixedThreadPool(2);
     public static void main(String args[]) throws Exception
     {
 
     }
+    public void start() {
+
+        pool.execute(new Thread(() -> {
+            try {
+                serverWorking();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+//
+    }
 
 
-    public void serverWorking() throws IOException {
+    public synchronized void serverWorking() throws IOException {
         DatagramSocket serverSocket = new DatagramSocket(3117);
         byte[] receiveData = new byte[1024];
         byte[] sendData = new byte[1024];
@@ -35,7 +49,17 @@ public class server {
             String end = new String (m.getOrginalStringEnd());
             String hash = new String (m.getHash());
 
-            if(m.getType()=='3'){
+            if(m.getType()=='1'){
+                message messageToReturn = new message(m.getTeamName(), '2',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+                InetAddress IPAddress = receivePacket.getAddress();
+                int port = receivePacket.getPort();
+                String offerAnswer = messageToReturn.getFullString();
+                sendData = offerAnswer.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                serverSocket.send(sendPacket);
+            }
+
+           else if(m.getType()=='3'){
                 answer=this.tryDeHash(start, end, hash);
                 if(answer!=null){
                     message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
