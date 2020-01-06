@@ -34,17 +34,27 @@ public class server {
             String start = new String(m.getOriginalStringStart());
             String end = new String (m.getOrginalStringEnd());
             String hash = new String (m.getHash());
-            answer=this.tryDeHash(start, end, hash);
-            if(answer!=null){
-                message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
-                InetAddress IPAddress = receivePacket.getAddress();
-                int port = receivePacket.getPort();
-                String capitalizedSentence = sentence.toUpperCase();
-                sendData = capitalizedSentence.getBytes();
-            DatagramPacket sendPacket =
-                    new DatagramPacket(sendData, sendData.length, IPAddress, port);
-            serverSocket.send(sendPacket);
-            }
+
+            if(m.getType()=='3'){
+                answer=this.tryDeHash(start, end, hash);
+                if(answer!=null){
+                    message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
+                    InetAddress IPAddress = receivePacket.getAddress();
+                    int port = receivePacket.getPort();
+                    String goodAnswer = messageToReturn.getFullString();
+                    sendData = goodAnswer.getBytes();
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                    serverSocket.send(sendPacket);
+                }
+                else{
+                    message messageToReturn = new message(m.getTeamName(), '5',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+                    InetAddress IPAddress = receivePacket.getAddress();
+                    int port = receivePacket.getPort();
+                    String badAnswer = messageToReturn.getFullString();
+                    sendData = badAnswer.getBytes();
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                    serverSocket.send(sendPacket);
+                }
 
 //            InetAddress IPAddress = receivePacket.getAddress();
 //            int port = receivePacket.getPort();
@@ -53,6 +63,9 @@ public class server {
 //            DatagramPacket sendPacket =
 //                    new DatagramPacket(sendData, sendData.length, IPAddress, port);
 //            serverSocket.send(sendPacket);
+            }
+
+
         }
     }
 
