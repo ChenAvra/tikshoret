@@ -6,26 +6,38 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class server {
-    public static void main(String args[]) throws Exception
-    {
+    ExecutorService pool = Executors.newFixedThreadPool(2);
 
+    public void start() {
+
+        pool.execute(new Thread(() -> {
+            try {
+                serverWorking();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+//
     }
 
 
-    public void serverWorking() throws IOException {
+    public synchronized void serverWorking() throws IOException {
         DatagramSocket serverSocket = new DatagramSocket(3117);
         byte[] receiveData = new byte[1024];
         byte[] sendData = new byte[1024];
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            System.out.println("Server:recived a message");
             serverSocket.receive(receivePacket);
             String sentence = new String( receivePacket.getData());
 
 
-            System.out.println("RECEIVED: " + sentence);
+            System.out.println("server:RECEIVED: " + sentence);
 
             message m = new message(sentence);
 
@@ -35,7 +47,19 @@ public class server {
             String end = new String (m.getOrginalStringEnd());
             String hash = new String (m.getHash());
 
-            if(m.getType()=='3'){
+            if(m.getType()=='1'){
+                message messageToReturn = new message(m.getTeamName(), '2',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+                InetAddress IPAddress = receivePacket.getAddress();
+                int port = receivePacket.getPort();
+                String offerAnswer = messageToReturn.getFullString();
+                System.out.println("send you an answer:"+offerAnswer);
+                sendData = offerAnswer.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                serverSocket.send(sendPacket);
+            }
+
+           else if(m.getType()=='3'){
+                System.out.println("server: this is a request, i will try to find you an answer");
                 answer=this.tryDeHash(start, end, hash);
                 if(answer!=null){
                     message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
