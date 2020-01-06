@@ -4,7 +4,13 @@ import java.io.IOException;
 
 public class ClientMain {
     public static void main(String[] args) {
-        client client1= new client("Iris and Chen");
+
+
+        char [] teamName = new char[32];
+        for(int i=0; i<teamName.length; i++){
+            teamName[i]='9';
+        }
+        client client1= new client(new String(teamName));
         try {
             client1.start();
         } catch (IOException e) {

@@ -45,7 +45,7 @@ public class message {
         char TypeFromMessage = this.Type;
         char lenghFromMessage = this.OriginalLengh;
 
-        int sizeOfString = Integer.parseInt(""+OriginalLengh);
+        int sizeOfString = Character.getNumericValue(OriginalLengh);
 
         String start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
         String end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
