@@ -32,21 +32,25 @@ public class client {
         sendData = m.getFullString().getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 3117);
         clientSocket.send(sendPacket);
+        System.out.println("client: i sent you discover");
 
 
         //recieve offer to client
 
-        clientSocket.setSoTimeout(1000);
+        clientSocket.setSoTimeout(50000000);
         boolean isTimeOut = false;
         while (!isTimeOut) {
             try {
                 byte[] receiveData = new byte[1024];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 clientSocket.receive(receivePacket);
+                System.out.println("client: i recivrd your offer");
                 message mFromServer=new message(new String (receivePacket.getData()));
+                System.out.println("client: your offer message is: type-"+mFromServer.getType());
                 if(mFromServer.getType()=='2'){
                     listServer.add(receivePacket.getAddress());
                 }
+
             } catch (SocketTimeoutException te) {
                 isTimeOut = true;
                 System.out.println("1 sec passed");
@@ -59,8 +63,9 @@ public class client {
 
     }
 
-    public  void  sendRequest( DatagramSocket clientSocket) throws IOException {
+    public  void  sendRequest(DatagramSocket clientSocket) throws IOException {
         String[] ranges = divideToDomains(Character.getNumericValue(length), listServer.size());
+        System.out.println("client: i'm in send request function");
         int i = 0;
         for (InetAddress ip1 : listServer) {
             if (i < ranges.length - 1) {
@@ -70,6 +75,7 @@ public class client {
                 sendData = m.getFullString().getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip1, 3117);
                 clientSocket.send(sendPacket);
+                System.out.println("client:sending request...");
 
 
                 clientSocket.setSoTimeout(1000*15000);

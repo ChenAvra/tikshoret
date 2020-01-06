@@ -35,8 +35,9 @@ public class server {
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            System.out.println("Server:recived a message");
+
             serverSocket.receive(receivePacket);
+            System.out.println("Server:recived a message");
             String sentence = new String( receivePacket.getData());
 
 
