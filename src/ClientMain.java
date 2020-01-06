@@ -2,7 +2,7 @@ import com.sun.security.ntlm.Client;
 
 import java.io.IOException;
 
-public class Main {
+public class ClientMain {
     public static void main(String[] args) {
         client client1= new client("Iris and Chen");
         try {

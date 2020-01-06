@@ -11,10 +11,7 @@ import java.util.concurrent.Executors;
 
 public class server {
     ExecutorService pool = Executors.newFixedThreadPool(2);
-    public static void main(String args[]) throws Exception
-    {
 
-    }
     public void start() {
 
         pool.execute(new Thread(() -> {
