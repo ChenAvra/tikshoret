@@ -32,23 +32,24 @@ public class client {
         sendData = m.getFullString().getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 3117);
         clientSocket.send(sendPacket);
-        System.out.println("client: i sent you discover");
+     //   System.out.println("client: i sent you discover");
 
 
         //recieve offer to client
 
-        clientSocket.setSoTimeout(50000000);
+        clientSocket.setSoTimeout(5000);
         boolean isTimeOut = false;
         while (!isTimeOut) {
             try {
                 byte[] receiveData = new byte[1024];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 clientSocket.receive(receivePacket);
-                System.out.println("client: i recivrd your offer");
+              //  System.out.println("client: i recivrd your offer");
                 message mFromServer=new message(new String (receivePacket.getData()));
-                System.out.println("client: your offer message is: type-"+mFromServer.getType());
+              //  System.out.println("client: your offer message is: type-"+mFromServer.getType());
                 if(mFromServer.getType()=='2'){
                     listServer.add(receivePacket.getAddress());
+                 //   System.out.println("client: i added you to list");
                 }
 
             } catch (SocketTimeoutException te) {
@@ -59,38 +60,36 @@ public class client {
             }
 
         }
-        sendRequest(clientSocket);
-
-    }
-
-    public  void  sendRequest(DatagramSocket clientSocket) throws IOException {
+        //sendRequest(clientSocket);
         String[] ranges = divideToDomains(Character.getNumericValue(length), listServer.size());
-        System.out.println("client: i'm in send request function");
+      //  System.out.println("client: i'm in send request function");
         int i = 0;
         for (InetAddress ip1 : listServer) {
             if (i < ranges.length - 1) {
-                message m = new message(teamName.toCharArray(), '3', hash.toCharArray(),  length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
+                message m1 = new message(teamName.toCharArray(), '3', hash.toCharArray(),  length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
                 i++;
-                byte[] sendData = new byte[1024];
-                sendData = m.getFullString().getBytes();
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip1, 3117);
-                clientSocket.send(sendPacket);
-                System.out.println("client:sending request...");
+                byte[] sendData1 = new byte[1024];
+                sendData1 = m1.getFullString().getBytes();
+                DatagramPacket sendPacket1 = new DatagramPacket(sendData1, sendData1.length, ip1, 3117);
+                clientSocket.send(sendPacket1);
+             //   System.out.println("client:sending request...");
 
 
                 clientSocket.setSoTimeout(1000*15000);
-                boolean isTimeOut = false;
+                boolean isTimeOut1 = false;
                 boolean found=false;
-                while (!isTimeOut && !found) {
+                String returnToClient ="";
+                while (!isTimeOut1 && !found) {
                     try {
                         byte[] receiveData = new byte[1024];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         clientSocket.receive(receivePacket);
                         message mFromServer = new message(new String(receivePacket.getData()));
                         if (mFromServer.getType() == '4') {
-                                String answer=mFromServer.getOriginalStringStart().toString();
-                                System.out.println(answer);
-                                found=true;
+                            String answer=new String(mFromServer.getOriginalStringStart());
+                         //   System.out.println(answer);
+                            returnToClient=answer;
+                            found=true;
                         }
                     } catch (SocketTimeoutException te) {
                         isTimeOut = true;
@@ -104,10 +103,70 @@ public class client {
 
                 clientSocket.close();
 
-                System.out.println("there is no string for hash");
+                if(!found){
+                    System.out.println("there is no string for hash");
+                }
+                else{
+                    System.out.println("i found your input:"+returnToClient);
+                }
             }
         }
+
     }
+
+//    public  void  sendRequest(DatagramSocket clientSocket) throws IOException {
+//        String[] ranges = divideToDomains(Character.getNumericValue(length), listServer.size());
+//        System.out.println("client: i'm in send request function");
+//        int i = 0;
+//        String answer="";
+//        for (InetAddress ip1 : listServer) {
+//            if (i < ranges.length - 1) {
+//                message m = new message(teamName.toCharArray(), '3', hash.toCharArray(),  length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
+//                i++;
+//                byte[] sendData = new byte[1024];
+//                sendData = m.getFullString().getBytes();
+//                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip1, 3117);
+//                clientSocket.send(sendPacket);
+//                System.out.println("client:sending request...");
+//
+//
+//                clientSocket.setSoTimeout(1000*15000);
+//                boolean isTimeOut = false;
+//                boolean found=false;
+//                while (!isTimeOut && !found) {
+//                    try {
+//                        byte[] receiveData = new byte[1024];
+//                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+//                        clientSocket.receive(receivePacket);
+//                        message mFromServer = new message(new String(receivePacket.getData()));
+//                        String tempAns =new String(mFromServer.getOriginalStringStart());
+//                        System.out.println("your answer is:"+tempAns);
+//                        if (mFromServer.getType() == '4') {
+//                                answer=new String(mFromServer.getOriginalStringStart());
+//                             //   System.out.println(answer);
+//                                found=true;
+//                        }
+//                    } catch (SocketTimeoutException te) {
+//                        isTimeOut = true;
+//                        System.out.println("15 sec passed");
+//
+//
+//                    }
+//
+//
+//                }
+//
+//                clientSocket.close();
+//                if(!found){
+//                    System.out.println("there is no string for hash");
+//                }
+//                else{
+//                    System.out.println("i found your input:"+answer);
+//                }
+//
+//            }
+//        }
+//    }
 
         public void start () throws IOException {
             System.out.println("welcome to " + teamName + ". Please enter the hash");

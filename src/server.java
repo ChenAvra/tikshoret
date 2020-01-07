@@ -37,11 +37,11 @@ public class server {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
             serverSocket.receive(receivePacket);
-            System.out.println("Server:recived a message");
+           // System.out.println("Server:recived a message");
             String sentence = new String( receivePacket.getData());
 
 
-            System.out.println("server:RECEIVED: " + sentence);
+           // System.out.println("server:RECEIVED: " + sentence);
 
             message m = new message(sentence);
 
@@ -56,17 +56,20 @@ public class server {
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
                 String offerAnswer = messageToReturn.getFullString();
-                System.out.println("send you an answer:"+offerAnswer);
+             //   System.out.println("send you an answer:"+offerAnswer);
                 sendData = offerAnswer.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                 serverSocket.send(sendPacket);
             }
 
            else if(m.getType()=='3'){
-                System.out.println("server: this is a request, i will try to find you an answer");
+              //  System.out.println("server: this is a request, i will try to find you an answer");
+                //answer=this.tryDeHash("tashaf", end, hash);
+               // System.out.println("your answer is:"+answer);
                 answer=this.tryDeHash(start, end, hash);
                 if(answer!=null){
                     message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
+                  //  System.out.println("the original lentgh is:"+m.getOriginalLengh());
                     InetAddress IPAddress = receivePacket.getAddress();
                     int port = receivePacket.getPort();
                     String goodAnswer = messageToReturn.getFullString();
@@ -122,6 +125,7 @@ public class server {
         for(int i = start; i <= end; i++){
             String currentString = converxtIntToString(i, length);
             String hash = hash(currentString);
+           // System.out.println("server: checking string - "+hash);
             if(originalHash.equals(hash)){
                 return currentString;
             }
