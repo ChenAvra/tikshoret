@@ -31,10 +31,11 @@ public class message {
 
         OriginalLengh=fullString.charAt(73);
         int sizeOfString = Character.getNumericValue((char)OriginalLengh);
+        if(fullString.length()>74) {
+            this.OriginalStringStart = (fullString.substring(74, 74 + sizeOfString)).toCharArray();
+            this.OrginalStringEnd=(fullString.substring((74+sizeOfString),(74+sizeOfString+sizeOfString))).toCharArray();
 
-        this.OriginalStringStart=(fullString.substring(74,74+sizeOfString)).toCharArray();
-
-        this.OrginalStringEnd=(fullString.substring((74+sizeOfString),(74+sizeOfString+sizeOfString))).toCharArray();
+        }
 
 
     }
