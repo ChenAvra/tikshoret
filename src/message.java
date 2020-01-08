@@ -50,11 +50,15 @@ public class message {
         String start="";
         String end="";
         if(getOriginalStringStart()!=null&& getOrginalStringEnd()!=null){
-             start = (new String(this.getOriginalStringStart())).substring(0,sizeOfString);
-            end = (new String (this.getOrginalStringEnd())).substring(0,sizeOfString);
+             start = new String(this.getOriginalStringStart());
+            end = new String (this.getOrginalStringEnd());
+            toReturn=teamName+TypeFromMessage+hash+ lenghFromMessage+ start+end;
+        }
+        else{
+            toReturn=teamName+TypeFromMessage+hash+ lenghFromMessage;
         }
 
-        toReturn=teamName+TypeFromMessage+hash+ lenghFromMessage+ start+end;
+
         return toReturn;
 
     }
