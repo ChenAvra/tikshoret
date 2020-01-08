@@ -177,7 +177,8 @@ public class client {
             System.out.println("Please enter the input string length");
             BufferedReader inFromUser2 = new BufferedReader(new InputStreamReader(System.in));
             String len =inFromUser2.readLine();
-            char fixLen=((char)Integer.parseInt(len));
+            int fix=(Integer.parseInt(len));
+            char fixLen= (char) Character.getNumericValue((char)fix);
             this.length = fixLen;
             discoverAndOffer(sentence,fixLen );
 
