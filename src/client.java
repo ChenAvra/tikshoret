@@ -103,7 +103,7 @@ public class client {
                             }
                         } catch (SocketTimeoutException te) {
                             isTimeOut = true;
-                            System.out.println("15 sec passed");
+                            System.out.println("15 seconds passed");
 
 
                         }
