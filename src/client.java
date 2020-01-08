@@ -23,14 +23,17 @@ public class client {
 
 
 
-    public  void discoverAndOffer (String sentence, char length) throws IOException {
+    public  void discoverAndOffer (String sentence, String length) throws IOException {
 
         //discover message to the server
-        message m = new message(teamName.toCharArray(), '1', hash.toCharArray(), length, null, null);
+        char a = '1';
+        byte [] typeArray = new byte[1];
+        typeArray[0]= (byte)a;
+        message1 m = new message1(teamName.getBytes(),typeArray, hash.getBytes(), length.getBytes(), null, null);
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName("255.255.255.255");
         byte[] sendData = new byte[1024];
-        sendData = m.getFullString().getBytes();
+        sendData = m.toByteArray();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 3117);
         clientSocket.send(sendPacket);
      //   System.out.println("client: i sent you discover");
@@ -62,15 +65,18 @@ public class client {
 
         }
         //sendRequest(clientSocket);
-        String[] ranges = divideToDomains(Character.getNumericValue(length), listServer.size());
+        String[] ranges = divideToDomains(Integer.parseInt(length), listServer.size());
       //  System.out.println("client: i'm in send request function");
         int i = 0;
         for (InetAddress ip1 : listServer) {
             if (i < ranges.length - 1) {
-                message m1 = new message(teamName.toCharArray(), '3', hash.toCharArray(),  length, ranges[i].toCharArray(), ranges[i + 1].toCharArray());
+                char b = '3';
+                byte [] type = new byte[1];
+                type[0]=(byte)b;
+                message1 m1 = new message1(teamName.getBytes(), type, hash.getBytes(),  length.getBytes(), ranges[i].getBytes(), ranges[i + 1].getBytes());
                 i++;
                 byte[] sendData1 = new byte[1024];
-                sendData1 = m1.getFullString().getBytes();
+                sendData1 = m1.toByteArray();
                 DatagramPacket sendPacket1 = new DatagramPacket(sendData1, sendData1.length, ip1, 3117);
                 clientSocket.send(sendPacket1);
              //   System.out.println("client:sending request...");
@@ -177,10 +183,8 @@ public class client {
             System.out.println("Please enter the input string length");
             BufferedReader inFromUser2 = new BufferedReader(new InputStreamReader(System.in));
             String len =inFromUser2.readLine();
-            int fix=(Integer.parseInt(len));
-            char fixLen= (char) Character.getNumericValue((char)fix);
-            this.length = fixLen;
-            discoverAndOffer(sentence,fixLen );
+
+            discoverAndOffer(sentence,len);
 
         }
 

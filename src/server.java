@@ -47,13 +47,13 @@ public class server {
     }
 
     private void cllasifierOfMessages(DatagramPacket receivePacket) throws IOException {
-        byte[] sendData = new byte[1024];
-        String sentence = new String( receivePacket.getData());
+        byte[] sendData = receivePacket.getData();
+    //    String sentence = new String( receivePacket.getData());
 
 
-         System.out.println("server:RECEIVED: " + sentence);
+       //  System.out.println("server:RECEIVED: " + sentence);
 
-        message m = new message(sentence);
+        message1 m = new message1(sendData);
 
         String answer="";
 
@@ -61,38 +61,49 @@ public class server {
         String end = new String (m.getOrginalStringEnd());
         String hash = new String (m.getHash());
 
-        if(m.getType()=='1'){
-            message messageToReturn = new message(m.getTeamName(), '2',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+        if((char)m.getType()[0]=='1'){
+            char a = '2';
+            byte [] type = new byte[1];
+            type[0]=(byte)a;
+            message1 messageToReturn = new message1(m.getTeamName(), type,m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
             InetAddress IPAddress = receivePacket.getAddress();
             int port = receivePacket.getPort();
-            String offerAnswer = messageToReturn.getFullString();
-              System.out.println("send you an answer:"+offerAnswer);
-            sendData = offerAnswer.getBytes();
+            System.out.println("server: i have a discover message from client");
+           // String offerAnswer = messageToReturn.getFullString();
+           //   System.out.println("send you an answer:"+offerAnswer);
+            sendData = messageToReturn.toByteArray();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
             serverSocket.send(sendPacket);
         }
 
-        else if(m.getType()=='3'){
+        else if((char)m.getType()[0]=='3'){
               System.out.println("server: this is a request, i will try to find you an answer");
-            //answer=this.tryDeHash("tashaf", end, hash);
-            answer=this.tryDeHash(start, end, hash);
+            System.out.println("i am activating hash function. start:"+start+",end:"+end+",hash:"+hash);
+            answer=this.tryDeHash("tashaf", end, hash);
+            //answer=this.tryDeHash(start, end, hash);
             System.out.println("your answer is:"+answer);
             if(answer!=null){
-                message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
+                char a = '4';
+                byte [] type = new byte[1];
+                type[0]=(byte)a;
+                message1 messageToReturn = new message1(m.getTeamName(), type,m.getHash(),m.getOriginalLengh(),answer.getBytes(),m.getOrginalStringEnd());
                 //  System.out.println("the original lentgh is:"+m.getOriginalLengh());
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
-                String goodAnswer = messageToReturn.getFullString();
-                sendData = goodAnswer.getBytes();
+//                String goodAnswer = messageToReturn.getFullString();
+                sendData = messageToReturn.toByteArray();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                 serverSocket.send(sendPacket);
             }
             else{
-                message messageToReturn = new message(m.getTeamName(), '5',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+                char a = '5';
+                byte [] type = new byte[1];
+                type[0]=(byte)a;
+                message1 messageToReturn = new message1(m.getTeamName(), type,m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
-                String badAnswer = messageToReturn.getFullString();
-                sendData = badAnswer.getBytes();
+//                String badAnswer = messageToReturn.getFullString();
+                sendData = messageToReturn.toByteArray();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                 serverSocket.send(sendPacket);
             }
@@ -143,7 +154,7 @@ public class server {
                 }
             }
         } catch (RuntimeException e) {
-            return null;
+            System.out.println("problem!!!!!");
         }
         return null;
     }
