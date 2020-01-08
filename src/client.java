@@ -176,9 +176,10 @@ public class client {
             this.hash = sentence;
             System.out.println("Please enter the input string length");
             BufferedReader inFromUser2 = new BufferedReader(new InputStreamReader(System.in));
-            char length = (inFromUser2.readLine()).charAt(0);
-            this.length = length;
-            discoverAndOffer(sentence, length);
+            String len =inFromUser2.readLine();
+            char fixLen=((char)Integer.parseInt(len));
+            this.length = fixLen;
+            discoverAndOffer(sentence,fixLen );
 
         }
 
