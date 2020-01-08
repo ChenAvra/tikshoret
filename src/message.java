@@ -30,7 +30,7 @@ public class message {
 
 
         OriginalLengh=fullString.charAt(73);
-        int sizeOfString = Integer.parseInt(""+OriginalLengh);
+        int sizeOfString = Character.getNumericValue((char)OriginalLengh);
 
         this.OriginalStringStart=(fullString.substring(74,74+sizeOfString)).toCharArray();
 
