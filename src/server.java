@@ -6,12 +6,13 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class server {
     ExecutorService pool = Executors.newFixedThreadPool(2);
-
+    private DatagramSocket serverSocket;
 
     public void start() {
 
@@ -27,65 +28,74 @@ public class server {
 
 
     public synchronized void serverWorking() throws IOException {
-        DatagramSocket serverSocket = new DatagramSocket(3117);
+        serverSocket = new DatagramSocket(3117);
         byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
-        serverSocket.setSoTimeout(1000000000);
+
+       // serverSocket.setSoTimeout(1000000000);
         boolean isTimeOut=false;
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
             serverSocket.receive(receivePacket);
-           // System.out.println("Server:recived a message");
-            String sentence = new String( receivePacket.getData());
+            cllasifierOfMessages(receivePacket);
+            System.out.println("Server:recived a message");
 
 
-           // System.out.println("server:RECEIVED: " + sentence);
 
-            message m = new message(sentence);
+        }
+    }
 
-            String answer="";
+    private void cllasifierOfMessages(DatagramPacket receivePacket) throws IOException {
+        byte[] sendData = new byte[1024];
+        String sentence = new String( receivePacket.getData());
 
-            String start = new String(m.getOriginalStringStart());
-            String end = new String (m.getOrginalStringEnd());
-            String hash = new String (m.getHash());
 
-            if(m.getType()=='1'){
-                message messageToReturn = new message(m.getTeamName(), '2',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+         System.out.println("server:RECEIVED: " + sentence);
+
+        message m = new message(sentence);
+
+        String answer="";
+
+        String start = new String(m.getOriginalStringStart());
+        String end = new String (m.getOrginalStringEnd());
+        String hash = new String (m.getHash());
+
+        if(m.getType()=='1'){
+            message messageToReturn = new message(m.getTeamName(), '2',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+            InetAddress IPAddress = receivePacket.getAddress();
+            int port = receivePacket.getPort();
+            String offerAnswer = messageToReturn.getFullString();
+              System.out.println("send you an answer:"+offerAnswer);
+            sendData = offerAnswer.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+            serverSocket.send(sendPacket);
+        }
+
+        else if(m.getType()=='3'){
+              System.out.println("server: this is a request, i will try to find you an answer");
+            //answer=this.tryDeHash("tashaf", end, hash);
+            answer=this.tryDeHash(start, end, hash);
+            System.out.println("your answer is:"+answer);
+            if(answer!=null){
+                message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
+                //  System.out.println("the original lentgh is:"+m.getOriginalLengh());
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
-                String offerAnswer = messageToReturn.getFullString();
-             //   System.out.println("send you an answer:"+offerAnswer);
-                sendData = offerAnswer.getBytes();
+                String goodAnswer = messageToReturn.getFullString();
+                sendData = goodAnswer.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                 serverSocket.send(sendPacket);
             }
-
-           else if(m.getType()=='3'){
-              //  System.out.println("server: this is a request, i will try to find you an answer");
-                //answer=this.tryDeHash("tashaf", end, hash);
-               // System.out.println("your answer is:"+answer);
-                answer=this.tryDeHash(start, end, hash);
-                if(answer!=null){
-                    message messageToReturn = new message(m.getTeamName(), '4',m.getHash(),m.getOriginalLengh(),answer.toCharArray(),m.getOrginalStringEnd());
-                  //  System.out.println("the original lentgh is:"+m.getOriginalLengh());
-                    InetAddress IPAddress = receivePacket.getAddress();
-                    int port = receivePacket.getPort();
-                    String goodAnswer = messageToReturn.getFullString();
-                    sendData = goodAnswer.getBytes();
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                    serverSocket.send(sendPacket);
-                }
-                else{
-                    message messageToReturn = new message(m.getTeamName(), '5',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
-                    InetAddress IPAddress = receivePacket.getAddress();
-                    int port = receivePacket.getPort();
-                    String badAnswer = messageToReturn.getFullString();
-                    sendData = badAnswer.getBytes();
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                    serverSocket.send(sendPacket);
-                }
+            else{
+                message messageToReturn = new message(m.getTeamName(), '5',m.getHash(),m.getOriginalLengh(),m.getOriginalStringStart(),m.getOrginalStringEnd());
+                InetAddress IPAddress = receivePacket.getAddress();
+                int port = receivePacket.getPort();
+                String badAnswer = messageToReturn.getFullString();
+                sendData = badAnswer.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                serverSocket.send(sendPacket);
+            }
 
 //            InetAddress IPAddress = receivePacket.getAddress();
 //            int port = receivePacket.getPort();
@@ -94,9 +104,6 @@ public class server {
 //            DatagramPacket sendPacket =
 //                    new DatagramPacket(sendData, sendData.length, IPAddress, port);
 //            serverSocket.send(sendPacket);
-            }
-
-
         }
     }
 
@@ -119,16 +126,24 @@ public class server {
 
 
     private String tryDeHash(String startRange, String endRange, String originalHash){
-        int start = convertStringToInt(startRange);
-        int end = convertStringToInt(endRange);
-        int length = startRange.length();
-        for(int i = start; i <= end; i++){
-            String currentString = converxtIntToString(i, length);
-            String hash = hash(currentString);
-           // System.out.println("server: checking string - "+hash);
-            if(originalHash.equals(hash)){
-                return currentString;
+        try {
+            int start = convertStringToInt(startRange);
+            int end = convertStringToInt(endRange);
+            int length = startRange.length();
+            String hash;
+            String currentString;
+            byte[] original = originalHash.getBytes();
+            byte[] hashArr;
+            for (int i = start; i <= end; i++) {
+                currentString = converxtIntToString(i, length);
+                hash = hash(currentString);
+                hashArr = hash.getBytes();
+                if (Arrays.equals(original, hashArr)) {
+                    return currentString;
+                }
             }
+        } catch (RuntimeException e) {
+            return null;
         }
         return null;
     }
