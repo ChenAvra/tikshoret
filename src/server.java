@@ -17,18 +17,18 @@ public class server {
     public void start() {
 
         pool.execute(new Thread(() -> {
-            try {
                 serverWorking();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }));
 //
     }
 
 
-    public synchronized void serverWorking() throws IOException {
-        serverSocket = new DatagramSocket(3117);
+    public synchronized void serverWorking()  {
+
+        try {
+            serverSocket = new DatagramSocket(3117);
+
         byte[] receiveData = new byte[1024];
 
        // serverSocket.setSoTimeout(1000000000);
@@ -44,9 +44,14 @@ public class server {
 
 
         }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void cllasifierOfMessages(DatagramPacket receivePacket) throws IOException {
+    private void cllasifierOfMessages(DatagramPacket receivePacket)  {
         byte[] sendData = receivePacket.getData();
     //    String sentence = new String( receivePacket.getData());
 
@@ -73,14 +78,18 @@ public class server {
            //   System.out.println("send you an answer:"+offerAnswer);
             sendData = messageToReturn.toByteArray();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-            serverSocket.send(sendPacket);
+            try {
+                serverSocket.send(sendPacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         else if((char)m.getType()[0]=='3'){
               System.out.println("server: this is a request, i will try to find you an answer");
             System.out.println("i am activating hash function. start:"+start+",end:"+end+",hash:"+hash);
-            answer=this.tryDeHash("tashaf", end, hash);
-            //answer=this.tryDeHash(start, end, hash);
+           // answer=this.tryDeHash("tashaf", end, hash);
+            answer=this.tryDeHash(start, end, hash);
             System.out.println("your answer is:"+answer);
             if(answer!=null){
                 char a = '4';
@@ -93,7 +102,11 @@ public class server {
 //                String goodAnswer = messageToReturn.getFullString();
                 sendData = messageToReturn.toByteArray();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                serverSocket.send(sendPacket);
+                try {
+                    serverSocket.send(sendPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             else{
                 char a = '5';
@@ -105,7 +118,11 @@ public class server {
 //                String badAnswer = messageToReturn.getFullString();
                 sendData = messageToReturn.toByteArray();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                serverSocket.send(sendPacket);
+                try {
+                    serverSocket.send(sendPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
 //            InetAddress IPAddress = receivePacket.getAddress();
@@ -154,7 +171,7 @@ public class server {
                 }
             }
         } catch (RuntimeException e) {
-            System.out.println("problem!!!!!");
+            System.out.println("problem in DeHash function!!!!!");
         }
         return null;
     }
