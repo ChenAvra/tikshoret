@@ -28,18 +28,21 @@ public class server {
 
         try {
             serverSocket = new DatagramSocket(3117);
+            serverSocket.setBroadcast(true);
+            serverSocket.setSoTimeout(10000*1000);
 
-        byte[] receiveData = new byte[1024];
 
-       // serverSocket.setSoTimeout(1000000000);
+
         boolean isTimeOut=false;
         while(true)
         {
+            byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
             serverSocket.receive(receivePacket);
-            cllasifierOfMessages(receivePacket);
             System.out.println("Server:recived a message");
+            cllasifierOfMessages(receivePacket);
+
 
 
 
