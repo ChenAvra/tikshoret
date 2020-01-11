@@ -48,9 +48,11 @@ public class server {
 
         }
         } catch (SocketException e) {
-            e.printStackTrace();
+            System.out.println("please reconnect - server");
+            return;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("please reconnect - server");
+            return;
         }
     }
 
@@ -84,7 +86,8 @@ public class server {
             try {
                 serverSocket.send(sendPacket);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("please reconnect - server");
+                return;
             }
         }
 
@@ -108,7 +111,9 @@ public class server {
                 try {
                     serverSocket.send(sendPacket);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("please reconnect - server");
+                    return;
+
                 }
             }
             else{
@@ -124,7 +129,8 @@ public class server {
                 try {
                     serverSocket.send(sendPacket);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("please reconnect - server");
+                    return;
                 }
             }
 

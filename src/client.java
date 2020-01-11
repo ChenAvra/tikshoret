@@ -124,9 +124,11 @@ public class client {
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            System.out.println("please reconnect - client");
+            return;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("please reconnect - client");
+            return;
         }
     }
 
